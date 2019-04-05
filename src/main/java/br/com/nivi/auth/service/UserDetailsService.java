@@ -11,9 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.nivi.auth.UserRepository;
 import br.com.nivi.auth.domain.Authority;
 import br.com.nivi.auth.domain.User;
+import br.com.nivi.auth.repository.UserRepository;
 
 @Service
 @Transactional
