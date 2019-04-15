@@ -39,7 +39,7 @@ public class User implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Owner owner;
 
-	@Column(updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false, unique = true)
 	private String username;
 
 	@Size(min = 0, max = 500)

@@ -3,7 +3,6 @@ package br.com.nivi.auth.service;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +16,7 @@ import br.com.nivi.auth.repository.UserRepository;
 
 @Service
 @Transactional
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class AppUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
 	UserRepository userRepository;
 
@@ -29,18 +28,12 @@ public class UserDetailsService implements org.springframework.security.core.use
 				.orElseThrow(() -> new UsernameNotFoundException("User " + username + " Not found"));
 	}
 
-	@Autowired
-	public void setUserRepository(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
-
 	private Collection<GrantedAuthority> getGrantedAuthorities(User user) {
 		Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 		for (Authority authority : user.getAuthorities()) {
 			GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
 			grantedAuthorities.add(grantedAuthority);
 		}
-
 		return grantedAuthorities;
 	}
 }

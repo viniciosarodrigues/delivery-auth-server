@@ -1,5 +1,7 @@
 package br.com.nivi.auth.config;
 
+import java.util.Arrays;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,34 +13,22 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-import br.com.nivi.auth.domain.Authorities;
+import br.com.nivi.auth.config.token.CustomTokenEnhacer;
 
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-	@Value("${security.oauth2.client.client-id}")
-	private String clientId;
-
-	@Value("${security.oauth2.client.authorized-grant-types}")
-	private String[] authorizedGrantTypes;
-
-	@Value("${security.oauth2.client.resource-ids}")
-	private String resourceIds;
-
-	@Value("${security.oauth2.client.scope}")
-	private String[] scopes;
-
-	@Value("${security.oauth2.client.client-secret}")
-	private String secret;
-
-	@Value("${security.oauth2.client.access-token-validity-seconds}")
-	private Integer accessTokenValiditySeconds;
-
 	@Autowired
 	DataSource dataSource;
+	
+	@Value("{security-signing-key-value}")
+	private String key;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -50,13 +40,26 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		endpoints.authenticationManager(this.authenticationManager).tokenStore(tokenStore());
+		TokenEnhancerChain tokenEnchantChain = new TokenEnhancerChain();
+		tokenEnchantChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter()));
+
+		endpoints.tokenStore(tokenStore()).tokenEnhancer(tokenEnchantChain).reuseRefreshTokens(false)
+				.authenticationManager(authenticationManager);
+	}
+
+	private TokenEnhancer tokenEnhancer() {
+		return new CustomTokenEnhacer();
+	}
+
+	@Bean
+	public JwtAccessTokenConverter accessTokenConverter() {
+		JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
+		accessTokenConverter.setSigningKey(key);
+		return accessTokenConverter;
 	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.jdbc(dataSource).withClient(clientId).authorizedGrantTypes(authorizedGrantTypes)
-				.authorities(Authorities.names()).resourceIds(resourceIds).scopes(scopes).secret(secret)
-				.accessTokenValiditySeconds(accessTokenValiditySeconds);
+		clients.jdbc(dataSource);
 	}
 }
