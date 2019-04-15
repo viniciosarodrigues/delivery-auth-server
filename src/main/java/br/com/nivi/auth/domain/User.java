@@ -6,10 +6,14 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
@@ -28,6 +32,13 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 5646851822856788595L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column
+	private Long id;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Owner owner;
+
 	@Column(updatable = false, nullable = false)
 	private String username;
 
@@ -37,8 +48,6 @@ public class User implements Serializable {
 	@Email
 	@Size(min = 0, max = 50)
 	private String email;
-
-	private Boolean activated;
 
 	@Size(min = 0, max = 100)
 	@Column(name = "activationkey")
