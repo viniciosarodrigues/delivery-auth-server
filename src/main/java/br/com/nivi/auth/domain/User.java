@@ -37,7 +37,7 @@ public class User implements Serializable {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	private ClientDetails owner;
+	private BaseClientDetails owner;
 
 	@Column(updatable = false, nullable = false, unique = true)
 	private String username;

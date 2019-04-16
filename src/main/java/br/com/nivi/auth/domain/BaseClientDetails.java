@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ClientDetails implements Serializable {
+public class BaseClientDetails implements Serializable {
 
 	private static final long serialVersionUID = -8416458905262374983L;
 
 	@Id
 	@Column(name = "client_id", nullable = false, unique = true)
-	private Long clientId;
+	private String clientId;
 
 	@Column(name = "resource_ids")
 	private String resourceIds;
