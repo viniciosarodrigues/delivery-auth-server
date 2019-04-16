@@ -3,6 +3,7 @@ package br.com.nivi.auth.service;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import br.com.nivi.auth.domain.User;
 import br.com.nivi.auth.repository.UserRepository;
 
 @Service
+@Qualifier("userDetailsPrincipal")
 @Transactional
 public class AppUserDetailsService implements UserDetailsService {
 
