@@ -1,13 +1,14 @@
 package br.com.nivi.auth.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,11 +18,10 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
 
 @Configuration
+@EnableWebSecurity
 @EnableResourceServer
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
-
-	@Value("${security.oauth2.client.resource-ids}")
-	private String RESOURCE_ID;
 
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -43,20 +43,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.antMatcher("/**").authorizeRequests()
-				.antMatchers("/", "/login**", "/webjars/**", "/oauth/register", "/oauth/token").permitAll().and()
-				.requestMatchers().antMatchers("/**").and().authorizeRequests().anyRequest().authenticated()
-				.antMatchers(HttpMethod.GET, "/**").access("#oauth2.hasScope('read')")
-				.antMatchers(HttpMethod.OPTIONS, "/**").access("#oauth2.hasScope('read')")
-				.antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
-				.antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-				.antMatchers(HttpMethod.PATCH, "/**").access("#oauth2.hasScope('write')")
-				.antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('write')");
+		http.authorizeRequests().anyRequest().authenticated().and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().csrf().disable();
 	}
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		resources.resourceId(RESOURCE_ID);
 		resources.stateless(true);
 	}
 }

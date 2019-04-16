@@ -26,7 +26,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Autowired
 	DataSource dataSource;
-	
+
 	@Value("{security-signing-key-value}")
 	private String key;
 
