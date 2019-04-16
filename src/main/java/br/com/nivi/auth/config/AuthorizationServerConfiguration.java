@@ -29,12 +29,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Autowired
 	@Qualifier("dataSource")
 	private DataSource dataSource;
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
 	private UserDetailsService userDetailsService;
 	@Autowired
 	private PasswordEncoder userPasswordEncoder;
+	@Autowired
+	private PasswordEncoder oauthClientPasswordEncoder;
 
 	@Bean
 	public TokenStore tokenStore() {
@@ -54,7 +57,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.jdbc(dataSource);
+		clients.jdbc(dataSource).passwordEncoder(oauthClientPasswordEncoder);
 	}
 
 	@Override

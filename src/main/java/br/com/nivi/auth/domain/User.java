@@ -14,8 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,18 +40,13 @@ public class User implements Serializable {
 	@Column(updatable = false, nullable = false, unique = true)
 	private String username;
 
-	@Size(min = 0, max = 500)
 	private String password;
 
-	@Email
-	@Size(min = 0, max = 50)
 	private String email;
 
-	@Size(min = 0, max = 100)
 	@Column(name = "activationkey")
 	private String activationKey;
 
-	@Size(min = 0, max = 100)
 	@Column(name = "resetpasswordkey")
 	private String resetPasswordKey;
 
